@@ -1,0 +1,15 @@
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  padding: 20px 10px;
+  margin-bottom: 50px;
+  background-color: #0c1e27;
+}
+
+.nav-container span {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}

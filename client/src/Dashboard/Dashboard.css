@@ -1,0 +1,65 @@
+.info-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+.info-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid #091921;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  width: 90%;
+  margin-right: 20px;
+  padding: 20px 10px;
+}
+.confirmed {
+  color: #ff105e !important;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+}
+.recovered {
+  color: #28a745 !important;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+}
+.death {
+  color: #ffffff;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+}
+.info-card p {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+}
+.last-updated {
+  font-size: 16px;
+  color: #fff;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+}
+.updated-time {
+  font-size: 18px;
+  color: #28a745;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+}
+
+.table-container {
+  margin-top: 40px;
+  width: 96%;
+  position: relative;
+}
+
+.map-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

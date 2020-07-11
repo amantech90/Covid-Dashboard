@@ -1,0 +1,17 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  min-height: 100vh;
+  background: #091921;
+}
+p {
+  margin: 0;
+}
+.zoom-in {
+  opacity: 0.8;
+  transition: 0.6s opacity;
+  cursor: pointer;
+}
