@@ -16,7 +16,7 @@ export default class Dashboard extends Component {
   componentDidMount() {
     // this.setState({ isLoading: true });
     axios
-      .get("/getCountrywiseData/india")
+      .get("/api/v1/covid19/getCountrywiseData/india")
       .then((res) => {
         console.log(res);
         if (res.data.status) {

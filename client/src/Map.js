@@ -34,7 +34,7 @@ class SvgComponent extends Component {
   getStateData = async () => {
     this.setState({ loading: true });
     axios
-      .get("/getAllStateData/india")
+      .get("/api/v1/covid19/getAllStateData/india")
       .then((res) => {
         console.log(res, "from");
         if (res.data.status) {
