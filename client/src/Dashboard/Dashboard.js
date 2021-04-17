@@ -11,13 +11,13 @@ import Table from "../Table/Table";
 export default class Dashboard extends Component {
   state = {
     countryWiseData: {},
-    isLoading: true
+    isLoading: true,
   };
   componentDidMount() {
     // this.setState({ isLoading: true });
     axios
       .get("/getCountrywiseData/india")
-      .then(res => {
+      .then((res) => {
         console.log(res);
         if (res.data.status) {
           this.setState({
@@ -25,14 +25,16 @@ export default class Dashboard extends Component {
               confirmed: res.data.data.confirmed,
               recovered: res.data.data.noOfRecovered,
               death: res.data.data.totalNoOfDeath,
-              delta: res.data.data.delta,
-              lastupdatedtime: new Date(res.data.data.lastupdatedtime)
+              deltaConfirmed: res.data.data.deltaConfirmed,
+              deltaRecovered: res.data.data.deltaRecovered,
+              deltaDeaths: res.data.data.deltaDeaths,
+              lastupdatedtime: res.data.data.lastupdatedtime,
             },
-            isLoading: false
+            isLoading: false,
           });
         }
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   }
   render() {
     const { countryWiseData, isLoading } = this.state;
@@ -48,7 +50,7 @@ export default class Dashboard extends Component {
               textAlign: "center",
               textTransform: "uppercase",
               letterSpacing: "1.5px",
-              fontWeight: "600"
+              fontWeight: "600",
             }}
           >
             Loading ...
@@ -60,35 +62,36 @@ export default class Dashboard extends Component {
                 <p className="last-updated">Last updated</p>
                 <p className="updated-time">
                   {" "}
-                  <Moment fromNow>{countryWiseData.lastupdatedtime}</Moment>
+                  {countryWiseData.lastupdatedtime}
                 </p>
                 <div className="info-container">
                   <div className="info-card">
                     <p className="confirmed">Confirmed</p>
                     <Logo width={100} heigth={100} />
                     <p>{countryWiseData.confirmed}</p>
-                    {/* <p>[+{countryWiseData.delta.confirmed}]</p> */}
+                    <p>[+{countryWiseData.deltaConfirmed}]</p>
                   </div>
                   <div className="info-card">
                     <p className="recovered">Recovered</p>
                     <Recover width={100} heigth={100} />
                     <p>{countryWiseData.recovered}</p>
-                    {/* <p>[+{countryWiseData.delta.recovered}]</p> */}
+                    <p>[+{countryWiseData.deltaRecovered}]</p>
                   </div>
                   <div className="info-card">
                     <p className="death">Death</p>
                     <Death />
                     <p>{countryWiseData.death}</p>
-                    {/* <p>[+{countryWiseData.delta.deaths}]</p> */}
+                    <p>[+{countryWiseData.deltaDeaths}]</p>
                   </div>
                 </div>
-                <div className="table-container">
-                  <Table />
+
+                <div className="map-container">
+                  <SvgComponent />
                 </div>
               </div>
               <div className="col-md-6">
-                <div className="map-container">
-                  <SvgComponent />
+                <div className="table-container">
+                  <Table />
                 </div>
               </div>
             </div>

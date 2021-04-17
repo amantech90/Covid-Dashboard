@@ -3,6 +3,7 @@ const CovidCollection = require("../model/Covid19");
 const ErrorResponse = require("../utils/errorResponse");
 const CasesCollection = require("../model/Cases");
 const { getData, dateOperations } = require("../utils/helper");
+const moment = require("moment");
 const startOfDay = new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString();
 const endOfDay = new Date(
   new Date().setUTCHours(23, 59, 59, 999)
@@ -15,13 +16,13 @@ exports.addCountry = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse("Country name is already exists", 401));
   }
   const newCountry = await CovidCollection({
-    countryName: countryName
+    countryName: countryName,
   });
 
   await newCountry.save();
   res.status(200).json({
     status: true,
-    message: "Successfully created!"
+    message: "Successfully created!",
   });
 });
 
@@ -42,7 +43,7 @@ exports.addCases = asyncHandler(async (req, res, next) => {
 
   queryObj.createdAt = {
     $gte: startOfDay, // 2019-11-08T00:00:00.000Z
-    $lt: endOfDay // 2019-11-08T23:59:59.999Z
+    $lt: endOfDay, // 2019-11-08T23:59:59.999Z
   };
   queryObj.countryId = covid._id;
   for (let i = 1; i < stateWiseData.length; i++) {
@@ -51,7 +52,7 @@ exports.addCases = asyncHandler(async (req, res, next) => {
       activeCases: stateWiseData[i].active,
       totalNoOfDeath: stateWiseData[i].deaths,
       noOfRecovered: stateWiseData[i].recovered,
-      countryId: covid._id
+      countryId: covid._id,
     };
     queryObj.stateName = stateWiseData[i].state;
     const cases = await CasesCollection.findOne(queryObj);
@@ -81,24 +82,24 @@ exports.updateCases = asyncHandler(async (req, res, next) => {
   let stateWiseData = json["statewise"];
   queryObj.createdAt = {
     $gte: startOfDay, // 2019-11-08T00:00:00.000Z
-    $lt: endOfDay // 2019-11-08T23:59:59.999Z
+    $lt: endOfDay, // 2019-11-08T23:59:59.999Z
   };
   queryObj.countryId = covid._id;
   for (let i = 1; i < stateWiseData.length; i++) {
     let data = {
       activeCases: stateWiseData[i].active,
       totalNoOfDeath: stateWiseData[i].deaths,
-      noOfRecovered: stateWiseData[i].recovered
+      noOfRecovered: stateWiseData[i].recovered,
     };
     queryObj.stateName = stateWiseData[i].state;
     await CasesCollection.findOneAndUpdate(queryObj, data, {
       new: true,
-      runValidators: true
+      runValidators: true,
     });
   }
   res.status(200).json({
     success: true,
-    message: "Successfully updated!"
+    message: "Successfully updated!",
   });
 });
 
@@ -123,7 +124,7 @@ exports.getStateData = asyncHandler(async (req, res, next) => {
 
   const cases = await CasesCollection.aggregate([
     {
-      $match: query
+      $match: query,
     },
     {
       $group: {
@@ -135,17 +136,17 @@ exports.getStateData = asyncHandler(async (req, res, next) => {
         stateName: { $first: "$stateName" },
         totalCases: {
           $sum: {
-            $add: ["$totalNoOfDeath", "$activeCases", "$noOfRecovered"]
-          }
+            $add: ["$totalNoOfDeath", "$activeCases", "$noOfRecovered"],
+          },
         },
-        lastupdatedtime: { $first: "$updatedAt" }
-      }
+        lastupdatedtime: { $first: "$updatedAt" },
+      },
     },
     {
       $sort: {
-        _id: -1
-      }
-    }
+        _id: -1,
+      },
+    },
   ]);
   if (cases.length <= 0) {
     return next(new ErrorResponse("Data is not found", "404"));
@@ -158,7 +159,7 @@ exports.getStateData = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     message: "Successfully get",
     status: true,
-    cases: cases[0]
+    cases: cases[0],
   });
 });
 
@@ -169,49 +170,48 @@ exports.getCountrywiseData = asyncHandler(async (req, res, next) => {
   }
   const json = await getData();
   const countryWise = json["statewise"];
-  console.log(countryWise[0]);
   let newDate = countryWise[0].lastupdatedtime.split("/");
   let correctDate =
     newDate[2].split(" ")[0] +
     "-" +
-    newDate[1] +
+    (newDate[1] > 9 ? newDate[1] : `0${newDate[1]}`) +
     "-" +
     newDate[0] +
     "T" +
     newDate[2].split(" ")[1] +
     "Z";
+  console.log(correctDate, "cor");
+  correctDate = dateOperations(correctDate, "minute", -330);
   let data = {
     stateName: countryWise[0].state,
     confirmed: countryWise[0].confirmed,
     totalNoOfDeath: countryWise[0].deaths,
     noOfRecovered: countryWise[0].recovered,
     countryId: countryName,
-    delta: countryWise[0].delta,
-    lastupdatedtime: dateOperations(correctDate, "minute", -330)
+    deltaConfirmed: countryWise[0].deltaconfirmed,
+    deltaRecovered: countryWise[0].deltarecovered,
+    deltaDeaths: countryWise[0].deltadeaths,
+    lastupdatedtime: moment(correctDate).calendar(),
   };
-  console.log(data);
+  console.log(data, "frp, ");
   res.status(200).json({ status: true, data });
 });
 
 exports.getAllStateData = asyncHandler(async (req, res, next) => {
-  const { countryName } = req.params;
-  const covid = await CovidCollection.findOne({ countryName });
-  if (!covid) {
-    return next(new ErrorResponse("Country name is not valid", 404));
-  }
   const json = await getData();
+  // console.log(json, "ssssssssssssssssskl");
   const stateWiseData = json["statewise"];
   let newData = stateWiseData;
   newData.sort(compareBy("state"));
   res.status(200).json({
     status: true,
     message: "successfully get!",
-    data: newData
+    data: newData,
   });
 });
 
 function compareBy(key) {
-  return function(a, b) {
+  return function (a, b) {
     if ("" + a[key] < "" + b[key]) return -1;
     if ("" + a[key] > "" + b[key]) return 1;
     return 0;

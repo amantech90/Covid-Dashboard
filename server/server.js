@@ -1,13 +1,11 @@
 const express = require("express");
 const colors = require("colors");
-const dotenv = require("dotenv");
-const connectDB = require("./config/db");
-dotenv.config({ path: "./config/config.env" });
+
 const morgan = require("morgan");
 const errorHandler = require("./middleware/error");
 const app = express();
+app.use(morgan("dev"));
 
-connectDB();
 // Body Parse
 app.use(express.json());
 app.use("/api/v1/covid19", require("./routes/covid19"));

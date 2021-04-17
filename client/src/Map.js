@@ -6,14 +6,11 @@ class SvgComponent extends Component {
     pathsInArray: [],
     stateData: [],
     style: {},
-    loading: false
+    loading: false,
   };
 
-  async componentDidMount() {
-    try {
-      await this.arrangePath();
-      await this.getStateData();
-    } catch (error) {}
+  componentDidMount() {
+    this.getStateData();
   }
 
   arrangePath = async () => {
@@ -24,13 +21,13 @@ class SvgComponent extends Component {
           fakeArray.push({
             key: key,
             path: mapInfo.paths[key],
-            stateName: mapInfo.names[stateKey]
+            stateName: mapInfo.names[stateKey],
           });
         }
       }
     }
     this.setState({
-      pathsInArray: fakeArray
+      pathsInArray: fakeArray,
     });
   };
 
@@ -38,8 +35,10 @@ class SvgComponent extends Component {
     this.setState({ loading: true });
     axios
       .get("/getAllStateData/india")
-      .then(res => {
+      .then((res) => {
+        console.log(res, "from");
         if (res.data.status) {
+          this.arrangePath();
           let duplicateDataArray = [];
           for (let i = 0; i < res.data.data.length; i++) {
             for (let j = 0; j < this.state.pathsInArray.length; j++) {
@@ -69,7 +68,7 @@ class SvgComponent extends Component {
                   stateName: res.data.data[i].state,
                   path: this.state.pathsInArray[j].path,
                   death: res.data.data[i].deaths,
-                  fillColor: fillColor
+                  fillColor: fillColor,
                 });
               }
             }
@@ -78,17 +77,17 @@ class SvgComponent extends Component {
           this.setState({ stateData: duplicateDataArray, loading: false });
         }
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
-  showTooltip = stateName => {
+  showTooltip = (stateName) => {
     this.setState({
-      style: { [stateName]: true }
+      style: { [stateName]: true },
     });
   };
-  hideTooltip = stateName => {
+  hideTooltip = (stateName) => {
     this.setState({
-      style: { [stateName]: false }
+      style: { [stateName]: false },
     });
   };
   render() {
@@ -107,9 +106,9 @@ class SvgComponent extends Component {
         width="100%"
         height="100%"
         viewBox="0 0 800 1000"
-        style={{ margin: "auto" }}
+        style={{ margin: "auto", position: "relative" }}
       >
-        {stateData.map(path => (
+        {stateData.map((path) => (
           <path
             key={Math.random(path.key)}
             data-toggle="tooltip"
